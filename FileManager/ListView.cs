@@ -39,6 +39,7 @@ namespace FileManager
         }
         public void Render()
         {
+            if(!Utility.isPainted)
             Utility.CreateMenuOptions();
             for (int i = 0; i < Math.Min(height,Items.Count); i++)
             {

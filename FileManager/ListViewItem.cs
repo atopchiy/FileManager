@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -38,6 +39,24 @@ namespace FileManager
             Console.CursorTop = i + y;
             Console.CursorLeft = x;
             Console.Write(new string(' ', columnsWidth.Sum()));
+        }
+        private void ShowProperties()
+        {
+           if(State is FileInfo file)
+           {
+                Console.WriteLine($"Name: {file.Name}");
+                Console.WriteLine($"Extension: {file.Extension}");
+                Console.WriteLine($"Size: {file.Length}");
+                Console.WriteLine($"Path: {file.FullName}");
+
+           }
+           else if(State is DirectoryInfo directory)
+            {
+                Console.WriteLine($"Name: {directory.Name}");
+                Console.WriteLine($"Last updated: {directory.LastWriteTimeUtc}");
+                Console.WriteLine($"Created at: {directory.CreationTimeUtc }");
+                Console.WriteLine($"Path: {directory.FullName }");
+            }
         }
     }
 }
