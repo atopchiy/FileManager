@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace FileManager
@@ -9,7 +10,7 @@ namespace FileManager
         private int prevSelectedIndex;
         private int selectedIndex;
         private bool wasPainted;
-
+        private bool wasCut;
         private int x;
         private int y;
         private int height;
@@ -19,6 +20,7 @@ namespace FileManager
         public bool ListViewSelected { get; set; }
         public List<ListViewItem> Items { get; set; }
         public ListViewItem SelectedItem => Items[selectedIndex];
+        public ListViewItem BufferedItem { get; set; }
         public bool Focused { get; set; }
         public ListView(int x, int y, int height)
         {
@@ -100,7 +102,46 @@ namespace FileManager
             }
 
         }
+        private void Copy() => BufferedItem = SelectedItem;
+        private void Paste()
+        {
+            if (SelectedItem.State is DirectoryInfo directory)
+            {
+                if (BufferedItem.State is FileInfo file)
+                {
+                    File.Move(file.FullName, directory.FullName);
+                    if (wasCut)
+                        File.Delete(file.FullName);
+                }
+                else if (BufferedItem.State is DirectoryInfo directoryInfo)
+                {
+                    Directory.Move(directoryInfo.FullName, directory.FullName);
+                    if (wasCut)
+                        Directory.Delete(directoryInfo.FullName);
+                }
 
+            }
+            wasCut = false;
+        }
+        private void CreateDirectory()
+        {
+            if(SelectedItem.State is DirectoryInfo directory)
+            {
+                Console.WriteLine("Enter directory name: ");
+                var name = Console.ReadLine();
+                Directory.CreateDirectory($"{directory.FullName}/{name}");
+            }
+        }
+        private void RenameDirecory()
+        {
+            if(SelectedItem.State is DirectoryInfo directory)
+            {
+                Console.WriteLine("Enter directory new name: ");
+                var name = Console.ReadLine();
+                Directory.CreateDirectory($"{directory.Parent.FullName} + '/' + {name}");
+                Directory.Delete(directory.FullName);
+            }
+        }
         public event EventHandler Selected;
         public event EventHandler Unselected;
     }
