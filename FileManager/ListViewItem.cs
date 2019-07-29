@@ -40,7 +40,7 @@ namespace FileManager
             Console.CursorLeft = x;
             Console.Write(new string(' ', columnsWidth.Sum()));
         }
-        private void ShowProperties()
+        public void ShowProperties()
         {
            if(State is FileInfo file)
            {

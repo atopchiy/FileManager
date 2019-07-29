@@ -14,11 +14,13 @@ namespace FileManager
             var listViewCollection = new ListViewCollection();
             InitConsole(listViewCollection);
             listViewCollection.ListViews.First().ListViewSelected = true;
+            for (var i = 0; i < listViewCollection.ListViews.Count; i++)
+                listViewCollection.ListViews[i].Render();
             while (true)
             {
                 var key = Console.ReadKey();
                 listViewCollection.Update(key);
-                for(var i = 0; i < listViewCollection.ListViews.Count; i++)
+                for (var i = 0; i < listViewCollection.ListViews.Count; i++)
                     listViewCollection.ListViews[i].Render();
             }
         }
@@ -33,9 +35,9 @@ namespace FileManager
             listViewCollection.ListViews.Add(view);
             var viewSecond = new ListView(70, 2, 20);
             viewSecond.ColumnsWidth = new List<int> { 30, 10, 10 };
+            viewSecond.Selected += View_Selected;
+            viewSecond.Unselected += View_Unselected;
             viewSecond.Items = GetItems("C:\\");
-            //viewSecond.Selected += View_Selected;
-            //viewSecond.Unselected += View_Unselected;
             listViewCollection.ListViews.Add(viewSecond);
         }
         private static List<ListViewItem> GetItems(string path)

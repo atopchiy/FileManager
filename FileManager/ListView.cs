@@ -31,6 +31,7 @@ namespace FileManager
         public void Clean()
         {
             selectedIndex = prevSelectedIndex = 0;
+            Utility.isPainted = false;
             wasPainted = false;
             for(int i = 0; i < Items.Count; i++)
             {
@@ -43,30 +44,31 @@ namespace FileManager
         {
             if(!Utility.isPainted)
             Utility.CreateMenuOptions();
-            for (int i = 0; i < Math.Min(height,Items.Count); i++)
-            {
-                int elementIndex = i + scroll;
-                if (wasPainted)
+                for (int i = 0; i < Math.Min(height, Items.Count); i++)
                 {
-                    if (elementIndex != selectedIndex && elementIndex != prevSelectedIndex)
-                        continue;
-                }
-                var item = Items[elementIndex];
-                var savedForeground = Console.ForegroundColor;
-                var savedBackground = Console.BackgroundColor;
-                if (elementIndex == selectedIndex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.BackgroundColor = ConsoleColor.White;
-                }
-                Console.CursorLeft = x;
-                Console.CursorTop = i + y;
-                item.Render(ColumnsWidth, i, x, y);
-                Console.ForegroundColor = savedForeground;
-                Console.BackgroundColor = savedBackground;
+                    int elementIndex = i + scroll;
+                    if (wasPainted)
+                    {
+                        if (elementIndex != selectedIndex && elementIndex != prevSelectedIndex)
+                            continue;
+                    }
+                    var item = Items[elementIndex];
+                    var savedForeground = Console.ForegroundColor;
+                    var savedBackground = Console.BackgroundColor;
+                    if (elementIndex == selectedIndex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.White;
+                    }
+                    Console.CursorLeft = x;
+                    Console.CursorTop = i + y;
+                    item.Render(ColumnsWidth, i, x, y);
+                    Console.ForegroundColor = savedForeground;
+                    Console.BackgroundColor = savedBackground;
 
-            }
-            wasPainted = true;
+                }
+                wasPainted = true;
+            
         }
         internal void Update(ConsoleKeyInfo key)
         {
@@ -99,6 +101,28 @@ namespace FileManager
                     Selected(this, EventArgs.Empty);
                 else if (key.Key == ConsoleKey.Escape)
                     Unselected(this, EventArgs.Empty);
+                else if (key.Key == ConsoleKey.F1)
+                {
+                    Copy();
+                    wasCut = false;
+                }
+                else if (key.Key == ConsoleKey.F2)
+                {
+                    Copy();
+                    wasCut = true;
+                }
+                else if (key.Key == ConsoleKey.F3)
+                    Paste();
+                else if (key.Key == ConsoleKey.F4)
+                {
+                    CreateDirectory();
+                    Clean();
+                    Console.Clear();
+                }
+                else if (key.Key == ConsoleKey.F6)
+                    SelectedItem.ShowProperties();
+                else if (key.Key == ConsoleKey.F7)
+                    RenameDirecory();
             }
 
         }
@@ -127,9 +151,14 @@ namespace FileManager
         {
             if(SelectedItem.State is DirectoryInfo directory)
             {
-                Console.WriteLine("Enter directory name: ");
+                Console.CursorTop = Items.Count + 3;
+                Console.Write("Enter directory name: ");
                 var name = Console.ReadLine();
-                Directory.CreateDirectory($"{directory.FullName}/{name}");
+                if (directory.Parent != null)
+                    Directory.CreateDirectory($"{directory.Parent.FullName}/{name}");
+                else
+                    Directory.CreateDirectory($"{directory.FullName}/{name}");
+                
             }
         }
         private void RenameDirecory()

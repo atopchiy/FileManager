@@ -35,5 +35,10 @@ namespace FileManager
                 else
                     selectedItem.Update(key);
         }
+        public void Clean()
+        {
+            foreach (var view in ListViews)
+                view.Clean();
+        }
     }
 }
